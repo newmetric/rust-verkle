@@ -185,12 +185,15 @@ pub(crate) fn update_root<C: Committer>(
             // Note that we have been given a stem to which we know is in the trie (ext_pres) and
             // we have computed all of the updates for that particular stem
             updated_commitents_by_stem.insert(stem, (stem_comm_new, hash_stem_comm_new));
-        } else if ext_pres == ExtPresent::DifferentStem {
-            let other_stem = hint.other_stems_by_prefix[&prefix];
-            updated_stems_by_prefix
-                .entry(prefix)
-                .or_default()
-                .insert(other_stem);
+        } else {
+            if ext_pres == ExtPresent::DifferentStem {
+                // If the extension is present, but it is not the same stem, then we need to update the stem
+                let other_stem = hint.other_stems_by_prefix[&prefix];
+                updated_stems_by_prefix
+                    .entry(prefix)
+                    .or_default()
+                    .insert(other_stem);
+            }
 
             // Since this stem was not present in the trie, we need to make its initial stem commitment
             //
